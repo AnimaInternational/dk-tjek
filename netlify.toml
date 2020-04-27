@@ -2,8 +2,3 @@
   command = "npm install && npm run build"
   functions = "functions/dist"
   publish = "build"
-[[redirects]]
-  from = "*"
-  to = "/index.html"
-  status = 200
-  force = true
