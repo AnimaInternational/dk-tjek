@@ -1,0 +1,24 @@
+{
+  "name": "functions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && tsc",
+    "build:watch": "tsc-watch",
+    "clean": "rimraf dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "firebase-admin": "^8.11.0"
+  },
+  "devDependencies": {
+    "@types/node": "^13.11.0",
+    "rimraf": "^3.0.2",
+    "tsc-watch": "^4.2.3",
+    "typescript": "^3.8.3"
+  }
+}
