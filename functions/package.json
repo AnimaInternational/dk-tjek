@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "npm run clean && tsc",
-    "build:watch": "npm run clean && tsc-watch",
+    "build": "npm run clean && webpack",
+    "build:watch": "NODE_ENV=development webpack",
     "clean": "rimraf dist"
   },
   "keywords": [],
@@ -18,8 +18,11 @@
   "devDependencies": {
     "@types/node": "^13.11.0",
     "rimraf": "^3.0.2",
+    "ts-loader": "^7.0.1",
     "tsc-watch": "^4.2.3",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11"
   },
   "engines": {
     "node": "12.16.x"
