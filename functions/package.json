@@ -20,5 +20,8 @@
     "rimraf": "^3.0.2",
     "tsc-watch": "^4.2.3",
     "typescript": "^3.8.3"
+  },
+  "engines": {
+    "node": "12.16.x"
   }
 }

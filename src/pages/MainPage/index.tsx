@@ -60,7 +60,7 @@ export const MainPage: React.FC = ({ children, ...props }) => {
               value={values.value}
             />
           </label>
-          {error && <p className="error">{error}</p>}
+          {error && <p className="error">{error.message}</p>}
           <button type="submit" disabled={loading}>
             Search
           </button>

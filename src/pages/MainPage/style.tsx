@@ -9,6 +9,11 @@ export const StyledMainPage = styled.div`
     }
   }
 
+  .error {
+    display: block;
+    color: var(--color-danger);
+  }
+
   table {
     min-width: 100%;
   }
