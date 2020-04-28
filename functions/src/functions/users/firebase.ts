@@ -15,8 +15,6 @@ const privateKey =
     ? FIREBASE_PRIVATE_KEY
     : JSON.parse(FIREBASE_PRIVATE_KEY!);
 
-console.log("private key: ", privateKey.slice(0, 32));
-
 firebase.initializeApp({
   credential: firebase.credential.cert({
     type: "service_account",

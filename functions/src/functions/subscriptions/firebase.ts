@@ -14,10 +14,6 @@ const privateKey =
   FIREBASE_PRIVATE_KEY![0] === "-"
     ? FIREBASE_PRIVATE_KEY
     : JSON.parse(FIREBASE_PRIVATE_KEY!);
-const privateKey2 = FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n");
-
-console.log("private key: ", privateKey.slice(0, 32));
-console.log("private key2: ", privateKey2.slice(0, 32));
 
 firebase.initializeApp({
   credential: firebase.credential.cert({

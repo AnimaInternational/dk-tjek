@@ -10,6 +10,11 @@ const {
   FIREBASE_DATABASE_URL,
 } = process.env;
 
+const privateKey =
+  FIREBASE_PRIVATE_KEY![0] === "-"
+    ? FIREBASE_PRIVATE_KEY
+    : JSON.parse(FIREBASE_PRIVATE_KEY!);
+
 firebase.initializeApp({
   credential: firebase.credential.cert({
     type: "service_account",
@@ -18,10 +23,7 @@ firebase.initializeApp({
     auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
     project_id: FIREBASE_PROJECT_ID,
     private_key_id: FIREBASE_PRIVATE_KEY_ID,
-    private_key:
-      FIREBASE_PRIVATE_KEY![0] === "-"
-        ? FIREBASE_PRIVATE_KEY
-        : JSON.parse(FIREBASE_PRIVATE_KEY!),
+    private_key: privateKey,
     client_email: FIREBASE_CLIENT_EMAIL,
     client_id: FIREBASE_CLIENT_ID,
     client_x509_cert_url: FIREBASE_CLIENT_X509_CERT_URL,
