@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ProfileEntry } from "../../components/ProfileEntry";
 import { useForm } from "../../hooks/useForm";
 import { useAppState } from "../../state";
 import { StyledProfilePage } from "./style";
-import { firebaseAuth } from "../../firebase";
 
 interface ProfilePageProps {}
 
