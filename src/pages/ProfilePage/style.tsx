@@ -5,7 +5,6 @@ export const StyledProfilePage = styled.div`
     display: flex;
     align-items: center;
     button {
-      padding: 8px 12px;
       margin-left: 16px;
     }
   }

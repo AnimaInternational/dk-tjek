@@ -22,9 +22,11 @@ export const App: React.FC = () => {
     <StyledApp>
       <Router>
         <header>
-          <h1>
-            <Logo />
-          </h1>
+          <Link to="/">
+            <h1>
+              <Logo />
+            </h1>
+          </Link>
           {user !== undefined && (
             <nav>
               {user && (
