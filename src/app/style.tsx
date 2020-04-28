@@ -23,6 +23,14 @@ export const StyledApp = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    min-height: 120px;
+    h1 {
+      display: flex;
+      align-items: center;
+      svg {
+        height: 30px;
+      }
+    }
     nav {
       margin-bottom: 0;
       ul {

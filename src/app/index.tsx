@@ -2,6 +2,7 @@ import React from "react";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { StyledApp } from "./style";
+import { ReactComponent as Logo } from "../assets/logo.svg";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import { LoginPage } from "../pages/LoginPage";
 import PrivateRoute from "../components/PrivateRoute";
@@ -21,7 +22,9 @@ export const App: React.FC = () => {
     <StyledApp>
       <Router>
         <header>
-          <h1>Anima</h1>
+          <h1>
+            <Logo />
+          </h1>
           {user !== undefined && (
             <nav>
               {user && (
