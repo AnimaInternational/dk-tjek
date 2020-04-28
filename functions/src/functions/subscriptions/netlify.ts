@@ -30,7 +30,7 @@ export const netlifyHandler = (
         statusCode: statusCode || 200,
       };
     } catch (e) {
-      console.error(e);
+      console.log(e);
       if (e.isNetlify) {
         return {
           body: e.message,
