@@ -1,10 +1,10 @@
-type NetlifyReturnType = {
+export type NetlifyReturnType = {
   statusCode: number;
   body: string;
   headers?: Record<string, string>;
 };
 
-type NetlifyEvent = {
+export type NetlifyEvent = {
   httpMethod: "GET" | "OPTIONS" | "POST" | "DELETE" | "PUT" | "PATCH";
   body: string;
   path: string;
@@ -13,9 +13,9 @@ type NetlifyEvent = {
   headers?: Record<string, string>;
 };
 
-type NetlifyContext = any;
+export type NetlifyContext = any;
 
-type NetlifyHandler = (
+export type NetlifyHandler = (
   event: NetlifyEvent,
   context: NetlifyContext
 ) => Promise<NetlifyReturnType>;

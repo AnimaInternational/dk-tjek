@@ -1,5 +1,9 @@
-import { authorizeUser } from "./auth";
-import { NetlifyError, netlifyHandler } from "./netlify";
+import {
+  authorizeUser,
+  NetlifyError,
+  netlifyHandler,
+  NetlifyHandler,
+} from "utils";
 
 const querySubscriptions = async (query: { email?: string }) => {
   return {

@@ -1,3 +1,5 @@
+import { NetlifyEvent, NetlifyContext, NetlifyHandler } from "./types/netlify";
+
 export class NetlifyError extends Error {
   public isNetlify = true;
   constructor(public statusCode: number, public message: string) {

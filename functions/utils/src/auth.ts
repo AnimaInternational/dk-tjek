@@ -1,5 +1,6 @@
 import { firebaseAuth } from "./firebase";
 import { NetlifyError } from "./netlify";
+import { NetlifyEvent } from "./types/netlify";
 
 const getAuthTokenFromHeaders = (
   headers?: Record<string, string>

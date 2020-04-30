@@ -1,6 +1,10 @@
-import { authorizeAdmin } from "./auth";
-import { firebaseAuth } from "./firebase";
-import { NetlifyError, netlifyHandler } from "./netlify";
+import {
+  NetlifyError,
+  netlifyHandler,
+  firebaseAuth,
+  authorizeAdmin,
+  NetlifyHandler,
+} from "utils";
 
 const getUsers = async () => {
   const { users } = await firebaseAuth.listUsers(1000);
