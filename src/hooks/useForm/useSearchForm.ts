@@ -13,6 +13,18 @@ export const useSearchForm = () => {
         { [values.type]: values.value }
       );
       return data.subscriptions;
+    },
+    (values) => {
+      switch (values.type) {
+        case "email":
+          return values.value.includes("@") && values.value.length > 3;
+        case "phone":
+          return /^\d{8}$/.test(values.value);
+        case "street":
+          return values.value.length > 3;
+        default:
+          return false;
+      }
     }
   );
 };

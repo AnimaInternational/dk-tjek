@@ -1,8 +1,8 @@
 import {
+  authorizeAdmin,
+  firebaseAuth,
   NetlifyError,
   netlifyHandler,
-  firebaseAuth,
-  authorizeAdmin,
   NetlifyHandler,
 } from "utils";
 

@@ -8,6 +8,9 @@
   --color-bg: #fff;
   --color-bg-secondary: #e9e9e9;
   --color-danger: rgb(235, 50, 36);
+  --color-danger-tint: rgba(235, 50, 36, 0.2);
+  --color-warning-tint: rgba(235, 205, 36, 0.2);
+  --color-success-tint: rgba(18, 158, 76, 0.2);
   --color-secondary: #920de9;
   --color-secondary-accent: #920de90b;
   --color-shadow: #35353535;

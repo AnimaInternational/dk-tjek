@@ -4,13 +4,14 @@ import { Api } from "../../types/api";
 import { StyledMainPage } from "./style";
 
 export const MainPage: React.FC = ({ children, ...props }) => {
-  const [subscriptions, setSubscriptions] = useState<Api.Subscription[] | null>(
-    null
-  );
+  const [subscriptions, setSubscriptions] = useState<
+    (Api.Subscription & { index: number })[] | null
+  >(null);
   const [lastSubmission, setLastSubmission] = useState<string | null>(null);
   const {
     error,
     loading,
+    valid,
     values,
     handleSubmit,
     handleInputChange,
@@ -21,7 +22,7 @@ export const MainPage: React.FC = ({ children, ...props }) => {
     const submittedValue = values.value;
     const result = await handleSubmit(event);
     setLastSubmission(submittedValue);
-    setSubscriptions(result);
+    setSubscriptions(result.map((a, i) => ({ ...a, index: i })));
   };
 
   useEffect(() => {
@@ -42,10 +43,29 @@ export const MainPage: React.FC = ({ children, ...props }) => {
     }
   };
 
+  const getQueryTypeInputPlaceholder = (
+    type: QueryType
+  ): HTMLInputElement["placeholder"] => {
+    switch (type) {
+      case "email":
+        return "account email";
+      case "phone":
+        return "only 8 digits";
+      case "street":
+        return "billing street, e.g. Hans Tavsens Gade 8";
+    }
+  };
+
+  const getStatusLevel = (status: string): "success" | "warning" | "danger" => {
+    if (status === "Active") return "success";
+    if (status === "Pending") return "warning";
+    return "danger";
+  };
+
   return (
     <StyledMainPage>
       <main>
-        <h2>Search members</h2>
+        <h2>Search subscriptions</h2>
         <form onSubmit={handleFormSubmit}>
           <div className="search-bar">
             <select
@@ -60,12 +80,13 @@ export const MainPage: React.FC = ({ children, ...props }) => {
             <label>
               <input
                 type={getQueryTypeInputType(values.type)}
+                placeholder={getQueryTypeInputPlaceholder(values.type)}
                 name="value"
                 onChange={handleInputChange}
                 value={values.value}
               />
             </label>
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading || !valid}>
               Search
             </button>
           </div>
@@ -87,11 +108,10 @@ export const MainPage: React.FC = ({ children, ...props }) => {
                   <thead>
                     <tr>
                       <th>Record type</th>
-                      <th>Status</th>
                       <th>Start date</th>
                       <th>End date</th>
                       <th>Account name</th>
-                      <th>Amount</th>
+                      <th>Amount (DKK)</th>
                       <th>Frequency</th>
                       <th>Billing street</th>
                       <th>Billing postal code</th>
@@ -100,17 +120,20 @@ export const MainPage: React.FC = ({ children, ...props }) => {
                   </thead>
                   <tbody>
                     {subscriptions.map((subscription) => (
-                      <tr>
-                        <td>{subscription.recordType}</td>
-                        <td>{subscription.status}</td>
-                        <td>{subscription.startDate}</td>
-                        <td>{subscription.endDate}</td>
-                        <td>{subscription.accountName}</td>
-                        <td>{subscription.amount}</td>
-                        <td>{subscription.frequency}</td>
-                        <td>{subscription.billing.street}</td>
-                        <td>{subscription.billing.postalCode}</td>
-                        <td>{subscription.billing.city}</td>
+                      <tr
+                        key={subscription.index}
+                        className={getStatusLevel(subscription.status)}
+                        title={subscription.status}
+                      >
+                        <td>{subscription.recordType || "–"}</td>
+                        <td>{subscription.startDate || "–"}</td>
+                        <td>{subscription.endDate || "–"}</td>
+                        <td>{subscription.accountName || "–"}</td>
+                        <td>{subscription.amount || "–"}</td>
+                        <td>{subscription.frequency || "–"}</td>
+                        <td>{subscription.billing.street || "–"}</td>
+                        <td>{subscription.billing.postalCode || "–"}</td>
+                        <td>{subscription.billing.city || "–"}</td>
                       </tr>
                     ))}
                   </tbody>

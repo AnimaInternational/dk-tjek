@@ -4,41 +4,62 @@ import {
   netlifyHandler,
   NetlifyHandler,
 } from "utils";
+import axios from "axios";
 
-const querySubscriptions = async (query: { email?: string }) => {
+type Subscription = {
+  recordType: string;
+  status: "Active" | "Pending" | "Cancelled" | "Failed" | "Mistake";
+  startDate: string;
+  endDate: string | null;
+  accountName: string;
+  amount: number;
+  frequency: string;
+  billing: {
+    street: string;
+    postalCode: string;
+    city: string;
+  };
+};
+
+const querySubscriptions = async (query: {
+  email?: string;
+  phone?: string;
+  street?: string;
+}) => {
+  const { data, status } = await axios
+    .post<any[] | "">(process.env.SALESFORCE_URL!, query, {
+      headers: {
+        AuthorizationToken: process.env.SALESFORCE_TOKEN,
+      },
+    })
+    .catch((e) => {
+      console.log(e);
+      throw new NetlifyError(e.status, e.message);
+    });
+
+  console.log(status);
+
+  const subscriptions: Subscription[] = Array.isArray(data)
+    ? data.map((subscription, index) => ({
+        status: subscription.status,
+        startDate: subscription.startDate,
+        recordType: subscription.recordType,
+        frequency: subscription.frequency,
+        endDate: subscription.endDate,
+        billing: {
+          street: subscription.billingStreet,
+          postalCode: subscription.billingPostalCode,
+          city: subscription.billingCity,
+        },
+        amount: subscription.amount,
+        accountName: subscription.accountName,
+      }))
+    : [];
+
   return {
     statusCode: 200,
     body: {
-      subscriptions: [
-        {
-          recordType: "QuickPay",
-          status: "Active",
-          startDate: "2016-03-05",
-          endDate: null,
-          accountName: "Mads Peter",
-          amount: 450,
-          frequency: "Every12Months",
-          billing: {
-            street: "Ved Monten 19, 3. tv.",
-            postalCode: "2000",
-            city: "Kobenhavn",
-          },
-        },
-        {
-          recordType: "QuickPay",
-          status: "Active",
-          startDate: "2016-03-05",
-          endDate: null,
-          accountName: "Jon Rommedahl",
-          amount: 450,
-          frequency: "Every12Months",
-          billing: {
-            street: "Ved Monten 19, 3. tv.",
-            postalCode: "2000",
-            city: "Kobenhavn",
-          },
-        },
-      ],
+      subscriptions,
     },
   };
 };
@@ -51,6 +72,8 @@ export const handler: NetlifyHandler = netlifyHandler(
         const body = JSON.parse(event.body);
         return querySubscriptions({
           email: body.email,
+          phone: body.phone,
+          street: body.street,
         });
       }
       default: {
