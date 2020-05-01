@@ -35,43 +35,47 @@ export const StyledMainPage = styled.div`
         }
       }
     }
+  }
+  section {
+    display: block;
+
     .error {
       display: block;
       color: var(--color-danger);
     }
-  }
 
-  .table-wrapper {
-    overflow-x: scroll;
-    table {
-      min-width: 100%;
-      tbody {
-        tr {
-          &.danger {
-            background-color: var(--color-danger-tint);
+    .table-wrapper {
+      overflow-x: scroll;
+      table {
+        min-width: 100%;
+        tbody {
+          tr {
+            &.danger {
+              background-color: var(--color-danger-tint);
+            }
+            &.warning {
+              background-color: var(--color-warning-tint);
+            }
+            &.success {
+              background-color: var(--color-success-tint);
+            }
+            &:nth-child(even) {
+              filter: brightness(2);
+            }
           }
-          &.warning {
-            background-color: var(--color-warning-tint);
-          }
-          &.success {
-            background-color: var(--color-success-tint);
-          }
-          &:nth-child(even) {
-            filter: brightness(2);
-          }
-        }
-        .status {
-          width: 16px;
-          height: 16px;
-          border-radius: 8px;
-          &.danger {
-            background-color: var(--color-danger);
-          }
-          &.warning {
-            background-color: var(--color-warning);
-          }
-          &.success {
-            background-color: var(--color-success);
+          .status {
+            width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            &.danger {
+              background-color: var(--color-danger);
+            }
+            &.warning {
+              background-color: var(--color-warning);
+            }
+            &.success {
+              background-color: var(--color-success);
+            }
           }
         }
       }

@@ -37,8 +37,8 @@ const querySubscriptions = async (
       },
     })
     .catch((e) => {
-      console.log(e);
-      throw new NetlifyError(e.status, e.message);
+      const [{ errorCode, message }] = e.response.data;
+      throw new NetlifyError(500, message);
     });
 
   console.log(status);

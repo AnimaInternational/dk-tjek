@@ -2,7 +2,7 @@ import { NetlifyEvent, NetlifyContext, NetlifyHandler } from "./types/netlify";
 
 export class NetlifyError extends Error {
   public isNetlify = true;
-  constructor(public statusCode: number, public message: string) {
+  constructor(public statusCode: number = 500, public message: string) {
     super(message);
   }
 }
@@ -35,12 +35,18 @@ export const netlifyHandler = (
       console.log(e);
       if (e.isNetlify) {
         return {
-          body: e.message,
+          body: JSON.stringify({
+            message: e.message,
+          }),
+          headers,
           statusCode: e.statusCode,
         };
       } else {
         return {
-          body: "Internal server error",
+          body: JSON.stringify({
+            message: "Internal server error",
+          }),
+          headers,
           statusCode: 500,
         };
       }

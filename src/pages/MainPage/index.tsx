@@ -20,9 +20,13 @@ export const MainPage: React.FC = ({ children, ...props }) => {
 
   const handleFormSubmit = async (event: FormEvent) => {
     const submittedValue = values.value;
-    const result = await handleSubmit(event);
-    setLastSubmission(submittedValue);
-    setSubscriptions(result.map((a, i) => ({ ...a, index: i })));
+    try {
+      setSubscriptions(null);
+      const result = await handleSubmit(event);
+      setSubscriptions(result.map((a, i) => ({ ...a, index: i })));
+    } finally {
+      setLastSubmission(submittedValue);
+    }
   };
 
   useEffect(() => {
@@ -90,63 +94,60 @@ export const MainPage: React.FC = ({ children, ...props }) => {
               Search
             </button>
           </div>
-          {error && <p className="error">{error.message}</p>}
         </form>
         <section>
-          {subscriptions === null ? (
-            loading ? (
-              <h3>Loading...</h3>
-            ) : null
-          ) : (
-            <>
-              <div className="header">
-                <h3>Results</h3>
-                <p>{lastSubmission}</p>
-              </div>
-              <div className="table-wrapper">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Record type</th>
-                      <th>Start date</th>
-                      <th>End date</th>
-                      <th>Account name</th>
-                      <th>Amount (DKK)</th>
-                      <th>Frequency</th>
-                      <th>Billing street</th>
-                      <th>Billing postal code</th>
-                      <th>Billing city</th>
+          {lastSubmission && (
+            <div className="header">
+              <h3>Results</h3>
+              <p>{lastSubmission}</p>
+            </div>
+          )}
+          {loading && <h3>Loading...</h3>}
+          {error && <p className="error">{error.message}</p>}
+          {subscriptions !== null && (
+            <div className="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Record type</th>
+                    <th>Start date</th>
+                    <th>End date</th>
+                    <th>Account name</th>
+                    <th>Amount (DKK)</th>
+                    <th>Frequency</th>
+                    <th>Billing street</th>
+                    <th>Billing postal code</th>
+                    <th>Billing city</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {subscriptions.map((subscription) => (
+                    <tr
+                      key={subscription.index}
+                      className={getStatusLevel(subscription.status)}
+                      title={subscription.status}
+                    >
+                      <td>{subscription.recordType || "–"}</td>
+                      <td>{subscription.startDate || "–"}</td>
+                      <td>{subscription.endDate || "–"}</td>
+                      <td>{subscription.accountName || "–"}</td>
+                      <td>{subscription.amount || "–"}</td>
+                      <td>{subscription.frequency || "–"}</td>
+                      <td>{subscription.billing.street || "–"}</td>
+                      <td>{subscription.billing.postalCode || "–"}</td>
+                      <td>{subscription.billing.city || "–"}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {subscriptions.map((subscription) => (
-                      <tr
-                        key={subscription.index}
-                        className={getStatusLevel(subscription.status)}
-                        title={subscription.status}
-                      >
-                        <td>{subscription.recordType || "–"}</td>
-                        <td>{subscription.startDate || "–"}</td>
-                        <td>{subscription.endDate || "–"}</td>
-                        <td>{subscription.accountName || "–"}</td>
-                        <td>{subscription.amount || "–"}</td>
-                        <td>{subscription.frequency || "–"}</td>
-                        <td>{subscription.billing.street || "–"}</td>
-                        <td>{subscription.billing.postalCode || "–"}</td>
-                        <td>{subscription.billing.city || "–"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td colSpan={10}>
-                        <p>{`${subscriptions.length || "No"} results`}</p>
-                      </td>
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan={10}>
+                      <p>{`${subscriptions.length || "No"} results`}</p>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           )}
         </section>
       </main>
