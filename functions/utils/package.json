@@ -10,9 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "firebase-admin": "^8.11.0"
+    "firebase-admin": "^8.11.0",
+    "jsonwebtoken": "^8.5.1"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^8.3.9",
     "typescript": "^3.8.3"
   }
 }

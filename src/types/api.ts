@@ -1,5 +1,6 @@
 export namespace Api {
   export interface User extends firebase.User {
+    salesforceToken: string;
     customClaims?: {
       admin?: boolean;
     };

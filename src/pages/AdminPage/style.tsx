@@ -15,5 +15,13 @@ export const StyledAdminPage = styled.div`
       color: var(--color);
       font-weight: bold;
     }
+    td.actions {
+      button {
+        display: inline-block;
+        &:first-child {
+          margin-right: 4px;
+        }
+      }
+    }
   }
 `;

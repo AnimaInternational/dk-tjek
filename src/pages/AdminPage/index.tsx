@@ -1,4 +1,8 @@
-import { faUserEdit, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faUserEdit,
+  faUserPlus,
+  faClipboard,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
 import { CreateUserModal } from "../../components/CreateUserModal";
@@ -13,6 +17,9 @@ interface AdminPageProps {}
 
 export const AdminPage: React.FC<AdminPageProps> = ({ children, ...props }) => {
   const [users, setUsers] = useState<Api.User[] | undefined>();
+  const [copiedTokenUser, setCopiedTokenUser] = useState<
+    Api.User | undefined
+  >();
   const [updateUser, setUpdateUser] = useState<Api.User | undefined>();
   const [showCreateUserModal, setShowCreateUserModal] = useState(false);
 
@@ -26,6 +33,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({ children, ...props }) => {
 
   const handleEditUser = async (user: Api.User) => {
     setUpdateUser(user);
+  };
+
+  const handleCopyUserToken = async (user: Api.User) => {
+    navigator.clipboard.writeText(user.salesforceToken);
+    setCopiedTokenUser(user);
   };
 
   const handleUserCreated = (user: Api.User) => {
@@ -61,6 +73,17 @@ export const AdminPage: React.FC<AdminPageProps> = ({ children, ...props }) => {
             <FontAwesomeIcon icon={faUserPlus} />
           </StyledIconButton>
         </div>
+        {copiedTokenUser && (
+          <p>
+            <i>
+              {copiedTokenUser.displayName || copiedTokenUser.email}'s token
+              copied to clipboard!
+              <br />
+              User will authenticate to Salesforce with that token preceded by
+              Bearer (i.e. "AuthorizationToken": "Bearer eyKernwkl...")
+            </i>
+          </p>
+        )}
         {loading ? <p>Loading...</p> : null}
         {error ? <p className="error">{error.message}</p> : null}
         {users ? (
@@ -83,7 +106,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({ children, ...props }) => {
                   </td>
                   <td>{user.metadata.creationTime}</td>
                   <td>{user.metadata.lastSignInTime || "–"}</td>
-                  <td>
+                  <td className="actions">
+                    {user.salesforceToken && (
+                      <StyledIconButton
+                        title={user.salesforceToken}
+                        onClick={() => handleCopyUserToken(user)}
+                      >
+                        <FontAwesomeIcon icon={faClipboard} />
+                      </StyledIconButton>
+                    )}
                     <StyledIconButton onClick={() => handleEditUser(user)}>
                       <FontAwesomeIcon icon={faUserEdit} />
                     </StyledIconButton>

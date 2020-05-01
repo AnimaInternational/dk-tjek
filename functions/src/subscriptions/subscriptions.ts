@@ -3,6 +3,7 @@ import {
   NetlifyError,
   netlifyHandler,
   NetlifyHandler,
+  getUserSalesforceToken,
 } from "utils";
 import axios from "axios";
 
@@ -21,15 +22,18 @@ type Subscription = {
   };
 };
 
-const querySubscriptions = async (query: {
-  email?: string;
-  phone?: string;
-  street?: string;
-}) => {
+const querySubscriptions = async (
+  salesforceToken: string,
+  query: {
+    email?: string;
+    phone?: string;
+    street?: string;
+  }
+) => {
   const { data, status } = await axios
     .post<any[] | "">(process.env.SALESFORCE_URL!, query, {
       headers: {
-        AuthorizationToken: process.env.SALESFORCE_TOKEN,
+        AuthorizationToken: `Bearer ${salesforceToken}`,
       },
     })
     .catch((e) => {
@@ -68,9 +72,13 @@ export const handler: NetlifyHandler = netlifyHandler(
   async (event, context) => {
     switch (event.httpMethod) {
       case "POST": {
-        await authorizeUser(event);
+        const { uid } = await authorizeUser(event);
+        const salesforceToken = getUserSalesforceToken(
+          uid,
+          process.env.JWT_SECRET!
+        );
         const body = JSON.parse(event.body);
-        return querySubscriptions({
+        return querySubscriptions(salesforceToken, {
           email: body.email,
           phone: body.phone,
           street: body.street,

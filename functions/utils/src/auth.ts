@@ -2,6 +2,11 @@ import { firebaseAuth } from "./firebase";
 import { NetlifyError } from "./netlify";
 import { NetlifyEvent } from "./types/netlify";
 
+type AuthorizationResult = {
+  uid: string;
+  admin: boolean;
+};
+
 const getAuthTokenFromHeaders = (
   headers?: Record<string, string>
 ): string | undefined => {
@@ -9,9 +14,9 @@ const getAuthTokenFromHeaders = (
   return authHeader ? authHeader.split("Bearer ")[1] : undefined;
 };
 
-const verifyToken = async (
+const verifyAuthToken = async (
   token?: string
-): Promise<{ uid: string; admin?: boolean }> => {
+): Promise<AuthorizationResult> => {
   try {
     if (!token) throw new NetlifyError(401, "Authentication failed");
     const claims = await firebaseAuth.verifyIdToken(token, true);
@@ -25,11 +30,16 @@ const verifyToken = async (
   }
 };
 
-export const authorizeUser = async (event: NetlifyEvent): Promise<void> => {
-  await verifyToken(getAuthTokenFromHeaders(event.headers));
+export const authorizeUser = async (
+  event: NetlifyEvent
+): Promise<AuthorizationResult> => {
+  return await verifyAuthToken(getAuthTokenFromHeaders(event.headers));
 };
 
-export const authorizeAdmin = async (event: NetlifyEvent): Promise<void> => {
-  const { admin } = await verifyToken(getAuthTokenFromHeaders(event.headers));
-  if (!admin) throw new NetlifyError(401, "Admins only");
+export const authorizeAdmin = async (
+  event: NetlifyEvent
+): Promise<AuthorizationResult> => {
+  const result = await verifyAuthToken(getAuthTokenFromHeaders(event.headers));
+  if (!result.admin) throw new NetlifyError(401, "Admins only");
+  return result;
 };

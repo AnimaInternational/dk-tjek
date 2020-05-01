@@ -4,13 +4,19 @@ import {
   NetlifyError,
   netlifyHandler,
   NetlifyHandler,
+  getUserSalesforceToken,
 } from "utils";
 
 const getUsers = async () => {
   const { users } = await firebaseAuth.listUsers(1000);
   return {
     statusCode: 200,
-    body: { users },
+    body: {
+      users: users.map((u) => ({
+        ...u,
+        salesforceToken: getUserSalesforceToken(u.uid, process.env.JWT_SECRET!),
+      })),
+    },
   };
 };
 
@@ -23,7 +29,15 @@ const createUser = async (data: {
   const user = await firebaseAuth.createUser(data);
   return {
     statusCode: 201,
-    body: { user },
+    body: {
+      user: {
+        ...user,
+        salesforceToken: getUserSalesforceToken(
+          user.uid,
+          process.env.JWT_SECRET!
+        ),
+      },
+    },
   };
 };
 
@@ -44,7 +58,15 @@ const updateUser = async (
   const user = await firebaseAuth.updateUser(uid, userData);
   return {
     statusCode: 200,
-    body: { user },
+    body: {
+      user: {
+        ...user,
+        salesforceToken: getUserSalesforceToken(
+          user.uid,
+          process.env.JWT_SECRET!
+        ),
+      },
+    },
   };
 };
 
