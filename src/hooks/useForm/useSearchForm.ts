@@ -5,17 +5,24 @@ import { Api } from "../../types/api";
 export type QueryType = "email" | "phone" | "street";
 
 export const useSearchForm = () => {
-  return useForm<{ type: QueryType; value: string }, Api.Subscription[]>(
-    { type: "email", value: "" },
+  return useForm<
+    {
+      selectedType: QueryType | null;
+      probableType: QueryType | null;
+      value: string;
+    },
+    Api.Subscription[]
+  >(
+    { selectedType: null, probableType: null, value: "" },
     async (values) => {
       const { data } = await axios.post<{ subscriptions: Api.Subscription[] }>(
         "subscriptions",
-        { [values.type]: values.value }
+        { [values.selectedType || values.probableType!]: values.value }
       );
       return data.subscriptions;
     },
     (values) => {
-      switch (values.type) {
+      switch (values.selectedType || values.probableType!) {
         case "email":
           return values.value.includes("@") && values.value.length > 3;
         case "phone":

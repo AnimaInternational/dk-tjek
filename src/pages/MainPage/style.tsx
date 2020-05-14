@@ -10,6 +10,11 @@ export const StyledMainPage = styled.div`
   }
 
   form {
+    p {
+      font-weight: bold;
+      margin: 0;
+      /* color: var(--color-text-secondary); */
+    }
     .search-bar {
       display: flex;
       flex-flow: row wrap;

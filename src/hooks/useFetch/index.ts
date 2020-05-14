@@ -24,7 +24,7 @@ export const useFetch = <T = any>(
       }
     }
     getData();
-  }, [endpoint]);
+  }, [endpoint, options]);
 
   return { data, error, loading };
 };

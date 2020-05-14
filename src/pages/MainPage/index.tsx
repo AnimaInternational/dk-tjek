@@ -1,13 +1,18 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import { QueryType, useSearchForm } from "../../hooks/useForm/useSearchForm";
 import { Api } from "../../types/api";
 import { StyledMainPage } from "./style";
 
+type IndexedSubscription = Api.Subscription & { index: number };
+
 export const MainPage: React.FC = ({ children, ...props }) => {
   const [subscriptions, setSubscriptions] = useState<
-    (Api.Subscription & { index: number })[] | null
+    IndexedSubscription[] | null
   >(null);
-  const [lastSubmission, setLastSubmission] = useState<string | null>(null);
+  const [lastSubmission, setLastSubmission] = useState<{
+    type: QueryType;
+    value: string;
+  } | null>(null);
   const {
     error,
     loading,
@@ -19,46 +24,73 @@ export const MainPage: React.FC = ({ children, ...props }) => {
   } = useSearchForm();
 
   const handleFormSubmit = async (event: FormEvent) => {
-    const submittedValue = values.value;
+    const submittedValues = values;
     try {
       setSubscriptions(null);
       const result = await handleSubmit(event);
-      setSubscriptions(result.map((a, i) => ({ ...a, index: i })));
+      const indexedSubscriptions = result
+        .map((a, i) => ({ ...a, index: i }))
+        .sort(
+          (a, b) =>
+            new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+        );
+      const { active, pending, other } = indexedSubscriptions.reduce<{
+        active: IndexedSubscription[];
+        pending: IndexedSubscription[];
+        other: IndexedSubscription[];
+      }>(
+        (res, subscription) => {
+          switch (subscription.status) {
+            case "Active":
+              res.active.push(subscription);
+              break;
+            case "Pending":
+              res.pending.push(subscription);
+              break;
+            default:
+              res.other.push(subscription);
+              break;
+          }
+          return res;
+        },
+        { active: [], pending: [], other: [] }
+      );
+      setSubscriptions([...active, ...pending, ...other]);
     } finally {
-      setLastSubmission(submittedValue);
+      setLastSubmission({
+        value: submittedValues.value,
+        type: submittedValues.selectedType || submittedValues.probableType!,
+      });
     }
   };
+
+  const getQueryTypeHelp = (type: QueryType | null): string => {
+    switch (type) {
+      case "email":
+        return "Enter account email";
+      case "phone":
+        return "Enter phone number (8 digits)";
+      case "street":
+        return "Enter billing street (e.g. Hans Tavsens Gade 8)";
+      default:
+        return "Enter email, phone or address";
+    }
+  };
+
+  const getProbableType = useCallback((value: string): QueryType | null => {
+    if (new RegExp(/(^\d+$)/).test(value)) return "phone";
+    if (new RegExp(/(@|.com|.dk)/).test(value)) return "email";
+    if (new RegExp(/(\s|vei|\w+\s\d+)/).test(value)) return "street";
+    return null;
+  }, []);
 
   useEffect(() => {
     setValues((state) => ({
       ...state,
-      value: "",
+      selectedType: values.value ? state.selectedType : null,
+      probableType: getProbableType(values.value),
     }));
-  }, [values.type, setValues]);
-
-  const getQueryTypeInputType = (type: QueryType): HTMLInputElement["type"] => {
-    switch (type) {
-      case "email":
-        return "email";
-      case "phone":
-        return "tel";
-      case "street":
-        return "address";
-    }
-  };
-
-  const getQueryTypeInputPlaceholder = (
-    type: QueryType
-  ): HTMLInputElement["placeholder"] => {
-    switch (type) {
-      case "email":
-        return "account email";
-      case "phone":
-        return "only 8 digits";
-      case "street":
-        return "billing street, e.g. Hans Tavsens Gade 8";
-    }
-  };
+  }, [getProbableType, values.value, setValues]);
 
   const getStatusLevel = (status: string): "success" | "warning" | "danger" => {
     if (status === "Active") return "success";
@@ -71,25 +103,24 @@ export const MainPage: React.FC = ({ children, ...props }) => {
       <main>
         <h2>Search subscriptions</h2>
         <form onSubmit={handleFormSubmit}>
+          <p>{getQueryTypeHelp(values.selectedType || values.probableType)}</p>
           <div className="search-bar">
+            <label>
+              <input
+                name="value"
+                value={values.value}
+                onChange={handleInputChange}
+              />
+            </label>
             <select
-              name="type"
-              value={values.type}
+              name="selectedType"
+              value={values.selectedType || values.probableType || undefined}
               onChange={handleInputChange}
             >
               <option value="email">Email</option>
               <option value="phone">Phone</option>
               <option value="street">Address</option>
             </select>
-            <label>
-              <input
-                type={getQueryTypeInputType(values.type)}
-                placeholder={getQueryTypeInputPlaceholder(values.type)}
-                name="value"
-                onChange={handleInputChange}
-                value={values.value}
-              />
-            </label>
             <button type="submit" disabled={loading || !valid}>
               Search
             </button>
@@ -99,7 +130,9 @@ export const MainPage: React.FC = ({ children, ...props }) => {
           {lastSubmission && (
             <div className="header">
               <h3>Results</h3>
-              <p>{lastSubmission}</p>
+              <p>
+                ({lastSubmission.type}: {lastSubmission.value})
+              </p>
             </div>
           )}
           {loading && <h3>Loading...</h3>}
@@ -118,6 +151,7 @@ export const MainPage: React.FC = ({ children, ...props }) => {
                     <th>Billing street</th>
                     <th>Billing postal code</th>
                     <th>Billing city</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -125,7 +159,6 @@ export const MainPage: React.FC = ({ children, ...props }) => {
                     <tr
                       key={subscription.index}
                       className={getStatusLevel(subscription.status)}
-                      title={subscription.status}
                     >
                       <td>{subscription.recordType || "–"}</td>
                       <td>{subscription.startDate || "–"}</td>
@@ -136,6 +169,7 @@ export const MainPage: React.FC = ({ children, ...props }) => {
                       <td>{subscription.billing.street || "–"}</td>
                       <td>{subscription.billing.postalCode || "–"}</td>
                       <td>{subscription.billing.city || "–"}</td>
+                      <td>{subscription.status || "–"}</td>
                     </tr>
                   ))}
                 </tbody>
