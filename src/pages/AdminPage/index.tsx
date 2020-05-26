@@ -106,18 +106,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({ children, ...props }) => {
                   </td>
                   <td>{user.metadata.creationTime}</td>
                   <td>{user.metadata.lastSignInTime || "–"}</td>
-                  <td className="actions">
-                    {user.salesforceToken && (
-                      <StyledIconButton
-                        title={user.salesforceToken}
-                        onClick={() => handleCopyUserToken(user)}
-                      >
-                        <FontAwesomeIcon icon={faClipboard} />
+                  <td>
+                    <div className="actions">
+                      {user.salesforceToken && (
+                        <StyledIconButton
+                          title={user.salesforceToken}
+                          onClick={() => handleCopyUserToken(user)}
+                        >
+                          <FontAwesomeIcon icon={faClipboard} />
+                        </StyledIconButton>
+                      )}
+                      <StyledIconButton onClick={() => handleEditUser(user)}>
+                        <FontAwesomeIcon icon={faUserEdit} />
                       </StyledIconButton>
-                    )}
-                    <StyledIconButton onClick={() => handleEditUser(user)}>
-                      <FontAwesomeIcon icon={faUserEdit} />
-                    </StyledIconButton>
+                    </div>
                   </td>
                 </tr>
               ))}

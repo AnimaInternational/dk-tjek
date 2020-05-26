@@ -11,15 +11,19 @@ export const StyledAdminPage = styled.div`
 
   table {
     min-width: 100%;
-    td.admin {
-      color: var(--color);
-      font-weight: bold;
-    }
-    td.actions {
-      button {
-        display: inline-block;
-        &:first-child {
-          margin-right: 4px;
+
+    td {
+      &.admin {
+        color: var(--color);
+        font-weight: bold;
+      }
+      .actions {
+        display: flex;
+        button {
+          display: inline-block;
+          &:first-child {
+            margin-right: 4px;
+          }
         }
       }
     }
