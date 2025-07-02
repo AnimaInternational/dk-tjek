@@ -1,11 +1,11 @@
+import axios from "axios";
 import {
   authorizeUser,
+  getUserSalesforceToken,
   NetlifyError,
   netlifyHandler,
   NetlifyHandler,
-  getUserSalesforceToken,
 } from "utils";
-import axios from "axios";
 
 type Subscription = {
   recordType: string;
@@ -34,6 +34,8 @@ const querySubscriptions = async (
     .post<any[] | "">(process.env.SALESFORCE_URL!, query, {
       headers: {
         AuthorizationToken: `Bearer ${salesforceToken}`,
+        "X-Middleware-Authorizer":
+          process.env.SALESFORCE_MIDDLEWARE_AUTHORIZER!,
       },
     })
     .catch((e) => {
