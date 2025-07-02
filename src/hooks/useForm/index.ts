@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 
 export const useForm = <T extends Record<string, any>, R = any>(
   initialValues: T,
@@ -12,6 +12,7 @@ export const useForm = <T extends Record<string, any>, R = any>(
 
   useEffect(() => {
     setValid(validatorFn ? validatorFn(values) : true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
 
   const handleInputChange = (
